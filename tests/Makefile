@@ -1,11 +1,13 @@
 CXXFLAGS=-std=c++1y -stdlib=libc++ -I../ext/gtest/include -I../ext/gtest
 LDFLAGS=-lc++
 CXX=g++
-PROGRAMS=format_test.out buffer_test.out
+PROGRAMS=format_test.out buffer_test.out reader_test.out
 
 all: gtest_main.o gtest-all.o $(PROGRAMS)
 
 buffer_test.out: ../buffer.o
+
+reader_test.out: ../reader.o ../buffer.o
 
 gtest_main.o: ../ext/gtest/src/gtest_main.cc
 	$(CXX) $(CXXFLAGS) -c $^ -o $@

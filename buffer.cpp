@@ -11,16 +11,19 @@ public:
 	Impl()
 	{}
 
-	void init(std::vector<float> const& monoral_samples, int sample_rate)
+	~Impl()
+	{}
+
+	void init(std::vector<std::vector<float>> && samples, int sample_rate)
 	{
-		format_ = Format(1, Format::Type::FLOAT, sample_rate);
-		samples_float_.push_back(monoral_samples);
+		format_ = Format(samples.size(), Format::Type::FLOAT, sample_rate);
+		samples_float_ = std::move(samples);
 	}
 
-	void init(std::vector<int16_t> const& monoral_samples, int sample_rate)
+	void init(std::vector<std::vector<int16_t>> && samples, int sample_rate)
 	{
-		format_ = Format(1, Format::Type::PCM, sample_rate);
-		samples_int16_.push_back(monoral_samples);
+		format_ = Format(samples.size(), Format::Type::PCM, sample_rate);
+		samples_int16_ = std::move(samples);
 	}
 
 	Format format() const
@@ -67,17 +70,35 @@ private:
 };
 
 
-Buffer::Buffer(std::vector<float> const& monoral_samples, int sample_rate)
+Buffer::Buffer(std::vector<float> && monoral_samples, int sample_rate)
 	: impl_(std::make_unique<Impl>())
 {
-	impl_->init(monoral_samples, sample_rate);
+	std::vector<std::vector<float>> buffer;
+	buffer.push_back(monoral_samples);
+	impl_->init(std::move(buffer), sample_rate);
 }
 
 
-Buffer::Buffer(std::vector<int16_t> const& monoral_samples, int sample_rate)
+Buffer::Buffer(std::vector<int16_t> && monoral_samples, int sample_rate)
 	: impl_(std::make_unique<Impl>())
 {
-	impl_->init(monoral_samples, sample_rate);
+	std::vector<std::vector<int16_t>> buffer;
+	buffer.push_back(std::move(monoral_samples));
+	impl_->init(std::move(buffer), sample_rate);
+}
+
+
+Buffer::Buffer(std::vector<std::vector<float>> && samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	impl_->init(std::move(samples), sample_rate);
+}
+
+
+Buffer::Buffer(std::vector<std::vector<int16_t>> && samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	impl_->init(std::move(samples), sample_rate);
 }
 
 

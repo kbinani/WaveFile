@@ -10,8 +10,10 @@ namespace WaveFile
 class Buffer
 {
 public:
-	Buffer(std::vector<float> const& monoral_samples, int sample_rate);
-	Buffer(std::vector<int16_t> const& monoral_samples, int sample_rate);
+	Buffer(std::vector<float> && monoral_samples, int sample_rate);
+	Buffer(std::vector<int16_t> && monoral_samples, int sample_rate);
+	Buffer(std::vector<std::vector<float>> && samples, int sample_rate);
+	Buffer(std::vector<std::vector<int16_t>> && samples, int sample_rate);
 
 	~Buffer();
 

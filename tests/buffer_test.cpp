@@ -12,7 +12,7 @@ TEST(Buffer, init_with_float32_44100_monoral)
 	buffer.push_back(0.2);
 	buffer.push_back(0.3);
 	buffer.push_back(0.4);
-	Buffer b(buffer, 44100);
+	Buffer b(std::move(buffer), 44100);
 
 	Format format = b.format();
 	EXPECT_EQ(1, format.channels());
@@ -44,7 +44,7 @@ TEST(Buffer, init_with_int16_44100_monoral)
 	buffer.push_back(200);
 	buffer.push_back(400);
 	buffer.push_back(500);
-	Buffer b(buffer, 44100);
+	Buffer b(std::move(buffer), 44100);
 
 	Format format = b.format();
 	EXPECT_EQ(1, format.channels());
