@@ -63,6 +63,16 @@ public:
 		}
 	}
 
+	size_t size() const
+	{
+		if (format_.type() == Format::Type::PCM) {
+			return samples_int16_[0].size();
+		} else if (format_.type() == Format::Type::FLOAT) {
+			return samples_float_[0].size();
+		}
+		return 0;
+	}
+
 private:
 	std::vector<std::vector<float>> samples_float_;
 	std::vector<std::vector<int16_t>> samples_int16_;
@@ -125,4 +135,9 @@ std::vector<int16_t> Buffer::samples<int16_t>(int channel) const
 	return impl_->samples_s16(channel);
 }
 
+
+size_t Buffer::size() const
+{
+	return impl_->size();
+}
 }

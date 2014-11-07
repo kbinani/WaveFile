@@ -22,6 +22,8 @@ public:
 	template<class T>
 	std::vector<T> samples(int channel = 0) const;
 
+	size_t size() const;
+
 private:
 	class Impl;
 	std::unique_ptr<Impl> impl_;
