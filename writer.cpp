@@ -1,5 +1,6 @@
 #include "./writer.hpp"
 #include <string>
+#include <cassert>
 
 namespace WaveFile
 {
@@ -34,21 +35,37 @@ public:
 		}
 	}
 
+
 	void write(Buffer const& buffer)
 	{
-		std::vector<std::vector<int16_t>> samples;
+		write(buffer, 0, buffer.size());
+	}
+
+	void write(Buffer const& buffer, int offset, size_t num_samples)
+	{
+		assert(offset >= 0);
+		assert(offset + num_samples <= buffer.size());
+
+		std::vector<std::vector<std::int16_t>> samples;
 		for (int ch = 0; ch < format_.channels(); ++ch) {
 			if (buffer.format().channels() <= ch) {
 				break;
 			}
-			samples.push_back(buffer.samples<int16_t>(ch));
+			auto s = buffer.samples<std::int16_t>(ch);
+			if (offset > 0) {
+				s.erase(s.begin(), s.begin() + offset);
+			}
+			if (num_samples < s.size()) {
+				s.erase(s.begin() + num_samples, s.end());
+			}
+			samples.push_back(s);
 		}
 		size_t size = buffer.size();
 		for (int i = 0; i < size; ++i) {
 			for (int ch = 0; ch < format_.channels(); ++ch) {
 				int actual_channel = ch < buffer.format().channels() ? ch : 0;
-				int16_t v = samples[actual_channel][i];
-				if (fwrite(&v, sizeof(int16_t), 1, file_) != 1) {
+				std::int16_t v = samples[actual_channel][i];
+				if (fwrite(&v, sizeof(std::int16_t), 1, file_) != 1) {
 					close();
 					return;
 				}
@@ -153,8 +170,8 @@ public:
 			return false;
 		}
 
-		uint32_t data_chunk_size = total_samples_ * format_.block_size();
-		uint32_t riff_chunk_size = (data_chunk_offset_ - 8) + data_chunk_size;
+		uint32_t data_chunk_size = static_cast<uint32_t>(total_samples_ * format_.block_size());
+		uint32_t riff_chunk_size = static_cast<uint32_t>((data_chunk_offset_ - 8) + data_chunk_size);
 		if (fwrite(&riff_chunk_size, sizeof(uint32_t), 1, file_) != 1) {
 			return false;
 		}
@@ -174,9 +191,9 @@ private:
 	std::string const path_;
 	Format const format_;
 	FILE* file_;
-	long data_chunk_offset_;
-	long riff_chunk_offset_;
-	long total_samples_;
+	size_t data_chunk_offset_;
+	size_t riff_chunk_offset_;
+	size_t total_samples_;
 };
 
 Writer::Writer(std::string const& path, Format format)
@@ -191,6 +208,12 @@ Writer::~Writer()
 void Writer::write(Buffer const& buffer)
 {
 	impl_->write(buffer);
+}
+
+
+void Writer::write(Buffer const& buffer, int offset, int samples)
+{
+	impl_->write(buffer, offset, samples);
 }
 
 }

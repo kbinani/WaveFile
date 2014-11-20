@@ -16,6 +16,8 @@ public:
 
 	void write(Buffer const& buffer);
 
+	void write(Buffer const& buffer, int offset, int num_samples);
+
 private:
 	class Impl;
 	std::unique_ptr<Impl> impl_;
