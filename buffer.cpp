@@ -112,6 +112,36 @@ Buffer::Buffer(std::vector<std::vector<int16_t>> && samples, int sample_rate)
 }
 
 
+Buffer::Buffer(float* monoral_samples, size_t num_samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	std::vector<std::vector<float>> buffer;
+	buffer.push_back(std::vector<float>());
+
+	assert(monoral_samples);
+	if (monoral_samples) {
+		buffer[0].assign(monoral_samples, monoral_samples + num_samples);
+	}
+
+	impl_->init(std::move(buffer), sample_rate);
+}
+
+
+Buffer::Buffer(std::int16_t* monoral_samples, size_t num_samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	std::vector<std::vector<std::int16_t>> buffer;
+	buffer.push_back(std::vector<std::int16_t>());
+
+	assert(monoral_samples);
+	if (monoral_samples) {
+		buffer[0].assign(monoral_samples, monoral_samples + num_samples);
+	}
+
+	impl_->init(std::move(buffer), sample_rate);
+}
+
+
 Buffer::~Buffer()
 {}
 
