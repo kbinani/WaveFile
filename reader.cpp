@@ -146,11 +146,12 @@ public:
 		return true;
 	}
 
-	std::unique_ptr<Buffer> read(int sample_frames)
+	Buffer read(int sample_frames)
 	{
 		std::vector<std::vector<int16_t>> result;
-		if (sample_frames <= 0) {
-			return std::make_unique<Buffer>(std::move(result), format_.sample_rate());
+		if (!file_ || sample_frames <= 0) {
+			Buffer b(std::move(result), format_.sample_rate());
+			return std::move(b);
 		}
 		for (int i = 0; i < format_.channels(); ++i) {
 			result.push_back(std::vector<int16_t>(sample_frames));
@@ -159,12 +160,14 @@ public:
 			for (int ch = 0; ch < format_.channels(); ++ch) {
 				int16_t v;
 				if (fread(&v, sizeof(int16_t), 1, file_) != 1) {
-					return std::make_unique<Buffer>(std::move(result), format_.sample_rate());
+					Buffer b(std::move(result), format_.sample_rate());
+					return std::move(b);
 				}
 				result[ch][i] = v;
 			}
 		}
-		return std::make_unique<Buffer>(std::move(result), format_.sample_rate());
+		Buffer b(std::move(result), format_.sample_rate());
+		return std::move(b);
 	}
 
 	Format format() const
@@ -193,7 +196,7 @@ Format Reader::format() const
 }
 
 
-std::unique_ptr<Buffer> Reader::read(int sample_frames)
+Buffer Reader::read(int sample_frames)
 {
 	return impl_->read(sample_frames);
 }

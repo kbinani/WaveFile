@@ -15,7 +15,7 @@ public:
 
 	Format format() const;
 
-	std::unique_ptr<Buffer> read(int sample_count);
+	Buffer read(int sample_count);
 
 private:
 	class Impl;

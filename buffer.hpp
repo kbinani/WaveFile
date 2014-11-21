@@ -17,6 +17,9 @@ public:
 	Buffer(float* monoral_samples, std::size_t num_samples, int sample_rate);
 	Buffer(std::int16_t* monoral_samples, std::size_t num_samples, int sample_rate);
 
+	Buffer(Buffer && other);
+	Buffer & operator = (Buffer && other);
+
 	~Buffer();
 
 	Format format() const;

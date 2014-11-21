@@ -45,7 +45,7 @@ public:
 			for (std::size_t i = 0; i < samples_int16_[channel].size(); ++i) {
 				result[i] = samples_int16_[channel][i] / 32768.0f;
 			}
-			return result;
+			return std::move(result);
 		}
 	}
 
@@ -61,7 +61,7 @@ public:
 			for (std::size_t i = 0; i < samples_float_[channel].size(); ++i) {
 				result[i] = (std::int16_t)(samples_float_[channel][i] * 32768);
 			}
-			return result;
+			return std::move(result);
 		}
 	}
 
@@ -144,6 +144,19 @@ Buffer::Buffer(std::int16_t* monoral_samples, size_t num_samples, int sample_rat
 }
 
 
+Buffer::Buffer(Buffer && other)
+{
+	impl_.swap(other.impl_);
+}
+
+
+Buffer & Buffer::operator = (Buffer && other)
+{
+	impl_.swap(other.impl_);
+	return *this;
+}
+
+
 Buffer::~Buffer()
 {}
 
@@ -157,14 +170,14 @@ Format Buffer::format() const
 template<>
 std::vector<float> Buffer::samples<float>(int channel) const
 {
-	return impl_->samples_f(channel);
+	return std::move(impl_->samples_f(channel));
 }
 
 
 template<>
 std::vector<std::int16_t> Buffer::samples<std::int16_t>(int channel) const
 {
-	return impl_->samples_s16(channel);
+	return std::move(impl_->samples_s16(channel));
 }
 
 
