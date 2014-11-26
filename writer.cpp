@@ -197,7 +197,7 @@ private:
 };
 
 Writer::Writer(std::string const& path, Format format)
-	: impl_(std::make_unique<Impl>(path, format))
+	: impl_(new Impl(path, format))
 {}
 
 

@@ -182,7 +182,7 @@ private:
 
 
 Reader::Reader(std::string const& path)
-	: impl_(std::make_unique<Impl>(path))
+	: impl_(new Impl(path))
 {}
 
 

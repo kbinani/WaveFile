@@ -90,7 +90,7 @@ float const Buffer::Impl::kFloatToInt16 = 32768.0f;
 
 
 Buffer::Buffer(std::vector<float> && monoral_samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<float>> buffer;
 	buffer.push_back(monoral_samples);
@@ -99,7 +99,7 @@ Buffer::Buffer(std::vector<float> && monoral_samples, int sample_rate)
 
 
 Buffer::Buffer(std::vector<std::int16_t> && monoral_samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<std::int16_t>> buffer;
 	buffer.push_back(std::move(monoral_samples));
@@ -108,21 +108,21 @@ Buffer::Buffer(std::vector<std::int16_t> && monoral_samples, int sample_rate)
 
 
 Buffer::Buffer(std::vector<std::vector<float>> && samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	impl_->init(std::move(samples), sample_rate);
 }
 
 
 Buffer::Buffer(std::vector<std::vector<std::int16_t>> && samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	impl_->init(std::move(samples), sample_rate);
 }
 
 	
 Buffer::Buffer(std::vector<float> const& monoral_samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<float>> buffer;
 	buffer.push_back(monoral_samples);
@@ -131,7 +131,7 @@ Buffer::Buffer(std::vector<float> const& monoral_samples, int sample_rate)
 
 	
 Buffer::Buffer(std::vector<std::int16_t> const& monoral_samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<std::int16_t>> buffer;
 	buffer.push_back(monoral_samples);
@@ -140,7 +140,7 @@ Buffer::Buffer(std::vector<std::int16_t> const& monoral_samples, int sample_rate
 
 	
 Buffer::Buffer(std::vector<std::vector<float>> const& samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<float>> copy = samples;
 	impl_->init(std::move(copy), sample_rate);
@@ -148,7 +148,7 @@ Buffer::Buffer(std::vector<std::vector<float>> const& samples, int sample_rate)
 
 	
 Buffer::Buffer(std::vector<std::vector<std::int16_t>> const& samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<std::int16_t>> copy = samples;
 	impl_->init(std::move(copy), sample_rate);
@@ -156,7 +156,7 @@ Buffer::Buffer(std::vector<std::vector<std::int16_t>> const& samples, int sample
 
 	
 Buffer::Buffer(float const* monoral_samples, size_t num_samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<float>> buffer;
 	buffer.push_back(std::vector<float>());
@@ -171,7 +171,7 @@ Buffer::Buffer(float const* monoral_samples, size_t num_samples, int sample_rate
 
 
 Buffer::Buffer(std::int16_t const* monoral_samples, size_t num_samples, int sample_rate)
-	: impl_(std::make_unique<Impl>())
+	: impl_(new Impl)
 {
 	std::vector<std::vector<std::int16_t>> buffer;
 	buffer.push_back(std::vector<std::int16_t>());
