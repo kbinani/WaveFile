@@ -3,6 +3,7 @@
 #include "./format.hpp"
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 namespace WaveFile
 {
@@ -14,8 +15,14 @@ public:
 	Buffer(std::vector<std::int16_t> && monoral_samples, int sample_rate);
 	Buffer(std::vector<std::vector<float>> && samples, int sample_rate);
 	Buffer(std::vector<std::vector<std::int16_t>> && samples, int sample_rate);
-	Buffer(float* monoral_samples, std::size_t num_samples, int sample_rate);
-	Buffer(std::int16_t* monoral_samples, std::size_t num_samples, int sample_rate);
+
+	Buffer(std::vector<float> const& monoral_samples, int sample_rate);
+	Buffer(std::vector<std::int16_t> const& monoral_samples, int sample_rate);
+	Buffer(std::vector<std::vector<float>> const& samples, int sample_rate);
+	Buffer(std::vector<std::vector<std::int16_t>> const& samples, int sample_rate);
+
+	Buffer(float const* monoral_samples, std::size_t num_samples, int sample_rate);
+	Buffer(std::int16_t const* monoral_samples, std::size_t num_samples, int sample_rate);
 
 	Buffer(Buffer && other);
 	Buffer & operator = (Buffer && other);

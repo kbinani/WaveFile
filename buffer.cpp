@@ -43,7 +43,7 @@ public:
 			std::vector<float> result;
 			result.resize(samples_int16_[channel].size());
 			for (std::size_t i = 0; i < samples_int16_[channel].size(); ++i) {
-				result[i] = samples_int16_[channel][i] / 32768.0f;
+				result[i] = samples_int16_[channel][i] / kFloatToInt16;
 			}
 			return std::move(result);
 		}
@@ -59,7 +59,8 @@ public:
 			std::vector<std::int16_t> result;
 			result.resize(samples_float_[channel].size());
 			for (std::size_t i = 0; i < samples_float_[channel].size(); ++i) {
-				result[i] = (std::int16_t)(samples_float_[channel][i] * 32768);
+				float const v = std::max(-1.0f, std::min(1.0f, samples_float_[channel][i]));
+				result[i] = (std::int16_t)(v * kFloatToInt16);
 			}
 			return std::move(result);
 		}
@@ -79,7 +80,13 @@ private:
 	std::vector<std::vector<float>> samples_float_;
 	std::vector<std::vector<std::int16_t>> samples_int16_;
 	Format format_;
+
+private:
+	static float const kFloatToInt16;
 };
+
+	
+float const Buffer::Impl::kFloatToInt16 = 32768.0f;
 
 
 Buffer::Buffer(std::vector<float> && monoral_samples, int sample_rate)
@@ -113,8 +120,42 @@ Buffer::Buffer(std::vector<std::vector<std::int16_t>> && samples, int sample_rat
 	impl_->init(std::move(samples), sample_rate);
 }
 
+	
+Buffer::Buffer(std::vector<float> const& monoral_samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	std::vector<std::vector<float>> buffer;
+	buffer.push_back(monoral_samples);
+	impl_->init(std::move(buffer), sample_rate);
+}
 
-Buffer::Buffer(float* monoral_samples, size_t num_samples, int sample_rate)
+	
+Buffer::Buffer(std::vector<std::int16_t> const& monoral_samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	std::vector<std::vector<std::int16_t>> buffer;
+	buffer.push_back(monoral_samples);
+	impl_->init(std::move(buffer), sample_rate);
+}
+
+	
+Buffer::Buffer(std::vector<std::vector<float>> const& samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	std::vector<std::vector<float>> copy = samples;
+	impl_->init(std::move(copy), sample_rate);
+}
+
+	
+Buffer::Buffer(std::vector<std::vector<std::int16_t>> const& samples, int sample_rate)
+	: impl_(std::make_unique<Impl>())
+{
+	std::vector<std::vector<std::int16_t>> copy = samples;
+	impl_->init(std::move(copy), sample_rate);
+}
+
+	
+Buffer::Buffer(float const* monoral_samples, size_t num_samples, int sample_rate)
 	: impl_(std::make_unique<Impl>())
 {
 	std::vector<std::vector<float>> buffer;
@@ -129,7 +170,7 @@ Buffer::Buffer(float* monoral_samples, size_t num_samples, int sample_rate)
 }
 
 
-Buffer::Buffer(std::int16_t* monoral_samples, size_t num_samples, int sample_rate)
+Buffer::Buffer(std::int16_t const* monoral_samples, size_t num_samples, int sample_rate)
 	: impl_(std::make_unique<Impl>())
 {
 	std::vector<std::vector<std::int16_t>> buffer;
@@ -168,14 +209,16 @@ Format Buffer::format() const
 
 
 template<>
-std::vector<float> Buffer::samples<float>(int channel) const
+std::vector<float>
+Buffer::samples<float>(int channel) const
 {
 	return std::move(impl_->samples_f(channel));
 }
 
 
 template<>
-std::vector<std::int16_t> Buffer::samples<std::int16_t>(int channel) const
+std::vector<std::int16_t>
+Buffer::samples<std::int16_t>(int channel) const
 {
 	return std::move(impl_->samples_s16(channel));
 }
@@ -185,4 +228,5 @@ size_t Buffer::size() const
 {
 	return impl_->size();
 }
-}
+	
+} // namespace WaveFile

@@ -6,12 +6,7 @@ TEST(Buffer, init_with_float32_44100_monoral)
 {
 	using namespace WaveFile;
 
-	std::vector<float> buffer;
-	buffer.push_back(0);
-	buffer.push_back(0.1);
-	buffer.push_back(0.2);
-	buffer.push_back(0.3);
-	buffer.push_back(0.4);
+	std::vector<float> buffer = {0, 0.1, 0.2, 0.3, 0.4};
 	Buffer b(std::move(buffer), 44100);
 
 	Format format = b.format();
@@ -38,12 +33,7 @@ TEST(Buffer, init_with_int16_44100_monoral)
 {
 	using namespace WaveFile;
 
-	std::vector<int16_t> buffer;
-	buffer.push_back(0);
-	buffer.push_back(100);
-	buffer.push_back(200);
-	buffer.push_back(400);
-	buffer.push_back(500);
+	std::vector<int16_t> buffer = {0, 100, 200, 400, 500};
 	Buffer b(std::move(buffer), 44100);
 
 	Format format = b.format();

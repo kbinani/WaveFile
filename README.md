@@ -1,6 +1,6 @@
-# WaveFile
+# WaveFile [![Build Status](https://travis-ci.org/kbinani/WaveFile.svg)](https://travis-ci.org/kbinani/WaveFile)
 
-Lightweight *.wav file IO library in C++.
+Lightweight *.wav file IO library written in C++.
 
 # Requirements
 

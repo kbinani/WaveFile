@@ -10,8 +10,8 @@ TEST(WriterTest, write)
 
 	std::string output("a.wav");
 	int const sample_rate = 44100;
-	auto format = Format(2, Format::Type::PCM, sample_rate);
-	auto writer = std::make_unique<Writer>(output, format);
+	Format format(2, Format::Type::PCM, sample_rate);
+	Writer writer(output, format);
 	std::vector<float> data;
 	double const kHz = 440;
 	double const kPI = 4 * std::atan(1.0);
@@ -20,6 +20,6 @@ TEST(WriterTest, write)
 		double v = 0.2 * std::sin(t * 2 * kPI * kHz);
 		data.push_back((float)v);
 	}
-	auto buffer = std::make_unique<Buffer>(std::move(data), format.sample_rate());
-	writer->write(*buffer.get());
+	Buffer buffer(std::move(data), format.sample_rate());
+	writer.write(buffer);
 }
