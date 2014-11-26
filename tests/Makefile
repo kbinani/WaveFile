@@ -1,6 +1,5 @@
 CXXFLAGS=-std=c++11 -stdlib=libc++ -I../ext/gtest/include -I../ext/gtest
 LDFLAGS=-lc++
-CXX=g++
 PROGRAMS=format_test.out buffer_test.out reader_test.out writer_test.out
 
 all: gtest_main.o gtest-all.o $(PROGRAMS)
