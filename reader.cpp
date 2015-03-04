@@ -18,10 +18,14 @@ class Reader::Impl
 public:
 	Impl(std::string const& path)
 		: file_(nullptr)
+		, total_samples_(0)
+		, valid_(false)
 	{
 		file_ = fopen(path.c_str(), "rb");
 		if (file_) {
-			if (!read_header()) {
+			if (read_header()) {
+				valid_ = true;
+			} else {
 				close();
 			}
 		}
@@ -36,7 +40,9 @@ public:
 	{
 		if (file_) {
 			fclose(file_);
+			file_ = nullptr;
 		}
+		valid_ = false;
 	}
 
 	bool read_header()
@@ -127,21 +133,29 @@ public:
 		}
 
 		// "data" header
-		char data[5];
-		data[4] = 0;
-		if (fread(data, sizeof(char), 4, file_) != 4) {
-			return false;
-		}
-		if (std::string(data) != std::string("data")) {
-			return false;
-		}
-
-		uint32_t size_of_data_chunk;
-		if (fread(&size_of_data_chunk, sizeof(uint32_t), 1, file_) != 1) {
-			return false;
+		uint32_t size_of_data_chunk = 0;
+		while (true) {
+			char data[5];
+			data[4] = 0;
+			if (fread(data, sizeof(char), 4, file_) != 4) {
+				return false;
+			}
+			uint32_t chunk_size = 0;
+			if (fread(&chunk_size, sizeof(uint32_t), 1, file_) != 1) {
+				return false;
+			}
+			if (std::string(data) == std::string("data")) {
+				size_of_data_chunk = chunk_size;
+				break;
+			}
+			if (fseek(file_, chunk_size, SEEK_CUR) != 0) {
+				return false;
+			}
 		}
 
 		format_ = Format(channels, Format::Type::PCM, sample_rate);
+		int const kBitPerByte = 8;
+		total_samples_ = size_of_data_chunk / channels * kBitPerByte / bit_per_sample;
 
 		return true;
 	}
@@ -175,9 +189,21 @@ public:
 		return format_;
 	}
 
+	bool is_valid() const
+	{
+		return file_ != nullptr;
+	}
+
+	size_t total_samples() const
+	{
+		return total_samples_;
+	}
+
 private:
 	Format format_;
 	FILE *file_;
+	size_t total_samples_;
+	bool valid_;
 };
 
 
@@ -199,6 +225,18 @@ Format Reader::format() const
 Buffer Reader::read(int sample_frames)
 {
 	return impl_->read(sample_frames);
+}
+
+
+bool Reader::is_valid() const
+{
+	return impl_->is_valid();
+}
+
+
+size_t Reader::total_samples() const
+{
+	return impl_->total_samples();
 }
 
 }

@@ -17,6 +17,10 @@ public:
 
 	Buffer read(int sample_count);
 
+	bool is_valid() const;
+
+	size_t total_samples() const;
+
 private:
 	class Impl;
 	std::unique_ptr<Impl> impl_;
